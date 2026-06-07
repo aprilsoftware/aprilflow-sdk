@@ -1,0 +1,116 @@
+/*
+ * Copyright 2026 April Software
+ * 
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements. See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership. The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License. You may obtain a copy of the License at
+ *
+ *  http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package aprilflow.sdk.upload;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import java.time.Instant;
+
+public final class Upload
+{
+    private final String id;
+    private final String collectionId;
+    private final Instant uploadDate;
+    private final UploadStatus status;
+    private final Instant statusDate;
+    private final String fileName;
+    private final int fileSize;
+    private final String documentId;
+    private final Integer processingDurationMillis;
+
+    @JsonCreator
+    public Upload(
+        @JsonProperty("id") String id,
+        @JsonProperty("collectionId") String collectionId,
+        @JsonProperty("uploadDate") Instant uploadDate,
+        @JsonProperty("status") UploadStatus status,
+        @JsonProperty("statusDate") Instant statusDate,
+        @JsonProperty("fileName") String fileName,
+        @JsonProperty("fileSize") int fileSize,
+        @JsonProperty("documentId") String documentId,
+        @JsonProperty("processingDurationMillis") Integer processingDurationMillis
+    )
+    {
+        this.id = id;
+
+        this.collectionId = collectionId;
+
+        this.uploadDate = uploadDate;
+
+        this.status = status;
+
+        this.statusDate = statusDate;
+
+        this.fileName = fileName;
+
+        this.fileSize = fileSize;
+
+        this.documentId = documentId;
+
+        this.processingDurationMillis = processingDurationMillis;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public String getCollectionId()
+    {
+        return collectionId;
+    }
+
+    public Instant getUploadDate()
+    {
+        return uploadDate;
+    }
+
+    public UploadStatus getStatus()
+    {
+        return status;
+    }
+
+    public Instant getStatusDate()
+    {
+        return statusDate;
+    }
+
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    public int getFileSize()
+    {
+        return fileSize;
+    }
+
+    public String getDocumentId()
+    {
+        return documentId;
+    }
+
+    public Integer getProcessingDurationMillis()
+    {
+        return processingDurationMillis;
+    }
+}
