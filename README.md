@@ -65,4 +65,4 @@ Documentation:
 
 Copyright 2026 April Software
 
-Licensed under the Apache License, Version 2.0. See the license files in each project for details.
+Licensed under the Apache License, Version 2.0.
