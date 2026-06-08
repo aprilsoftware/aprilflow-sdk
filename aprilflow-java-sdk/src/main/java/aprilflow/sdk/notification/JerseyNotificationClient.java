@@ -23,15 +23,16 @@ package aprilflow.sdk.notification;
 import aprilflow.sdk.AprilFlowException;
 
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.ClientRequestContext;
 import jakarta.ws.rs.client.ClientRequestFilter;
 import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.sse.InboundSseEvent;
-import jakarta.ws.rs.sse.SseEventSource;
 
+import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.media.sse.EventSource;
+import org.glassfish.jersey.media.sse.InboundEvent;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
@@ -49,31 +50,30 @@ public final class JerseyNotificationClient implements AprilFlowNotificationClie
     {
         this.baseUrl = baseUrl;
 
-        this.client = ClientBuilder.newBuilder()
-            .register(JacksonFeature.class)
-            .connectTimeout(10, TimeUnit.SECONDS)
-            .readTimeout(0, TimeUnit.SECONDS)
-            .build();
+        this.client = createClient();
+    }
+
+    private Client createClient()
+    {
+        return JerseyClientBuilder.createClient()
+                .register(JacksonFeature.class)
+                .property(ClientProperties.CONNECT_TIMEOUT, 10_000)
+                .property(ClientProperties.READ_TIMEOUT, 0);
     }
 
     @Override
     public NotificationSubscription listen(NotificationRequest request)
     {
-        SseEventSource eventSource;
+        EventSource eventSource;
         WebTarget target;
 
         target = targetFor(request);
 
-        eventSource = SseEventSource.target(target)
-            .reconnectingEvery(1, TimeUnit.SECONDS)
-            .build();
+        eventSource = EventSource.target(target)
+                .reconnectingEvery(1, TimeUnit.SECONDS)
+                .build();
 
-        eventSource.register(
-            event -> onEvent(event, request),
-            error -> onError(error, request),
-            () -> {
-            }
-        );
+        eventSource.register(event -> onEvent(event, request));
 
         try
         {
@@ -83,13 +83,15 @@ public final class JerseyNotificationClient implements AprilFlowNotificationClie
         {
             eventSource.close();
 
+            onError(exception, request);
+
             throw new AprilFlowException("Unable to open notification stream", exception);
         }
 
         return new NotificationSubscription(eventSource);
     }
 
-    private void onEvent(InboundSseEvent event, NotificationRequest request)
+    private void onEvent(InboundEvent event, NotificationRequest request)
     {
         Notification notification;
         String eventName;

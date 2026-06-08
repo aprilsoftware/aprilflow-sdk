@@ -20,26 +20,20 @@
  */
 package aprilflow.sdk.notification;
 
-import jakarta.ws.rs.sse.SseEventSource;
-
-import java.util.concurrent.TimeUnit;
+import org.glassfish.jersey.media.sse.EventSource;
 
 public final class NotificationSubscription implements AutoCloseable
 {
-    private final SseEventSource eventSource;
+    private final EventSource eventSource;
 
-    public NotificationSubscription(SseEventSource eventSource)
+    public NotificationSubscription(EventSource eventSource)
     {
         this.eventSource = eventSource;
     }
 
-    public boolean isOpen()
-    {
-        return eventSource.isOpen();
-    }
-
+    @Override
     public void close()
     {
-        eventSource.close(5, TimeUnit.SECONDS);
+        eventSource.close();
     }
 }

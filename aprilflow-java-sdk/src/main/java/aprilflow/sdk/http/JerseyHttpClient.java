@@ -21,7 +21,6 @@
 package aprilflow.sdk.http;
 
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.client.Invocation;
 import jakarta.ws.rs.client.WebTarget;
@@ -29,6 +28,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import org.glassfish.jersey.client.ClientProperties;
+import org.glassfish.jersey.client.JerseyClientBuilder;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.media.multipart.file.StreamDataBodyPart;
@@ -61,10 +61,14 @@ public final class JerseyHttpClient implements AprilFlowHttpClient
         Logger.getLogger("org.glassfish.jersey.client")
             .setLevel(Level.SEVERE);
 
-        this.client = ClientBuilder.newBuilder()
+        this.client = createClient();
+    }
+
+    private Client createClient()
+    {
+        return JerseyClientBuilder.createClient()
             .register(MultiPartFeature.class)
-            .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true)
-            .build();
+            .property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
     }
 
     @Override
